@@ -13,6 +13,24 @@ const SIGN_IN = gql`
   }
 `;
 
+const MAKE_CHECK = gql`
+  mutation MakeCheck($code: String!) {
+  makeCheck(code: $code) {
+    _id
+    admin
+    name
+    email
+    checkpoints {
+      workTime
+      lastCheck
+      firstCheck
+      date
+      _id
+    }
+  }
+}
+`;
+
 const USER_BY_TOKEN = gql`
   query Query($token: String!) {
     getUserByToken(token: $token) {
@@ -26,4 +44,4 @@ const USER_BY_TOKEN = gql`
   }
 `;
 
-export { SIGN_IN, USER_BY_TOKEN };
+export { SIGN_IN, USER_BY_TOKEN, MAKE_CHECK};

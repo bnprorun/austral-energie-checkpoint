@@ -65,7 +65,7 @@ const userType = `#graphql
     input CheckpointInput{
         code: String!
     }
-
+    
     type Query {
         getUsers: [UserResponse],
         getUserProfil(id: ID!) : UserResponse

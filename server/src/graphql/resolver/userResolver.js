@@ -115,13 +115,14 @@ const userResolver = {
         throw new GraphQLError("Mauvais code d'accès", {
           extensions: { code: "BAD_INPUT", status: 401 },
         });
-      let indexCheck =
+      const indexCheck =
         user.checkpoints && user.checkpoints.length > 0
           ? user.checkpoints.findIndex(
               (check) => check.date === moment().format("DD/MM/YYYY")
             )
           : undefined;
-      if (indexCheck === undefined) {
+      console.log(indexCheck);
+      if (indexCheck === undefined || indexCheck === -1) {
         user.checkpoints.unshift({
           date: moment().format("DD/MM/YYYY"),
           firstCheck: moment().format(),
@@ -138,7 +139,6 @@ const userResolver = {
         user.checkpoints[indexCheck] &&
         user.checkpoints[indexCheck].lastCheck == undefined
       ) {
-        console.log(user.checkpoints[indexCheck].lastCheck);
         const a = new moment(user.checkpoints[indexCheck].firstCheck);
         const b = new moment();
         user.checkpoints[indexCheck].lastCheck = moment().format();
@@ -148,9 +148,9 @@ const userResolver = {
           user,
           { new: true }
         );
-        return result.toJSON();
+        return user.toJSON();
       } else {
-        throw new GraphQLError("pointage entrer/sortie fait aujoud'hui !");
+        return {...user.toJSON() };
       }
     },
   },
