@@ -1,4 +1,4 @@
-import { connectDB } from "./config/db.js";
+import { connectDB, ifCollectionExists} from "./config/db.js";
 import mongoose from "mongoose";
 import express from "express";
 import typeDefs from "./graphql/type/index.js";
@@ -34,6 +34,7 @@ app.use(express.json());
   app.listen(3000, async () => {
     try {
       await connectDB();
+      await ifCollectionExists();
     } catch (error) {
       console.error("Erreur pour se connecter à la base de donnée.", error);
     }

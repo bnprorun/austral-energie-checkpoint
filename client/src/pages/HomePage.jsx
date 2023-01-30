@@ -129,7 +129,12 @@ const HomePage = (props) => {
                 )}
               </div>
               <div className="overflow-hidden bg-white shadow sm:rounded-md mt-4">
-                <h1 className="p-3 text-gray-700">Mes pointages</h1>
+                {checkpoints && checkpoints.length > 0 && (
+                  <>
+                    <h1 className="p-3 text-gray-700">Mes pointages</h1>
+                  </>
+                )}
+
                 <ul role="list" className="divide-y divide-gray-200">
                   {checkpoints &&
                     checkpoints.length > 0 &&
@@ -145,7 +150,11 @@ const HomePage = (props) => {
                                   </p>
                                   <div className="ml-2 flex flex-shrink-0">
                                     <p className="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
-                                      {check.workTime ? (<>{check.workTime} secondes </>) : (<>non défini</>)}
+                                      {check.workTime ? (
+                                        <>{check.workTime} secondes </>
+                                      ) : (
+                                        <>non défini</>
+                                      )}
                                     </p>
                                   </div>
                                 </div>
@@ -164,9 +173,13 @@ const HomePage = (props) => {
                                       className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
                                       aria-hidden="true"
                                     />
-                                    <p>{check.lastCheck ? (<>{formatDate(check.lastCheck)}
-                                    </>) : (<> pointage en attente</>)}
-                                      </p>
+                                    <p>
+                                      {check.lastCheck ? (
+                                        <>{formatDate(check.lastCheck)}</>
+                                      ) : (
+                                        <> pointage en attente</>
+                                      )}
+                                    </p>
                                   </div>
                                 </div>
                               </div>
