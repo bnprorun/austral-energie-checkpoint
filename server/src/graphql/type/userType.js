@@ -1,4 +1,14 @@
 const userType = `#graphql
+    scalar Date
+
+    type Checkpoint{
+        _id: ID!
+        date: String!,
+        firstCheck: Date!,
+        lastCheck: Date,
+        workTime: Int
+    }
+
     type User{
         id : ID!
         name: String!
@@ -6,6 +16,7 @@ const userType = `#graphql
         password: String!
         access_code : String!
         admin: Boolean!
+        checkpoints: [Checkpoint]
     }
 
     type UserResponse{
@@ -14,6 +25,7 @@ const userType = `#graphql
         email: String!
         access_code : String!
         admin: Boolean!
+        checkpoints : [Checkpoint]
     }
     
     type DeleteResponse{
@@ -50,6 +62,10 @@ const userType = `#graphql
         admin: Boolean
     }
 
+    input CheckpointInput{
+        code: String!
+    }
+
     type Query {
         getUsers: [UserResponse],
         getUserProfil(id: ID!) : UserResponse
@@ -61,10 +77,9 @@ const userType = `#graphql
         signIn(input: LoginInput) : AuthenticatedUser
         updateUser(input: UpdateInput ) : UserResponse
         deleteUser(id: ID!) : DeleteResponse
+        makeCheck(code: String!) : UserResponse
     }
 
 `;
 
-export {
-    userType
-}
+export { userType };

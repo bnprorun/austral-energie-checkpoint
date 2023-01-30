@@ -6,6 +6,9 @@ import {
   existingAccessCode,
   existingEmail,
 } from "../../function/userFunction.js";
+import moment from "moment";
+
+moment.locale("fr");
 
 const userResolver = {
   Mutation: {
@@ -106,10 +109,54 @@ const userResolver = {
         });
       }
     },
+    async makeCheck(root, { code }, context) {
+      const user = await userModel.findOne({ access_code: code });
+      if (!user)
+        throw new GraphQLError("Mauvais code d'accès", {
+          extensions: { code: "BAD_INPUT", status: 401 },
+        });
+      let indexCheck =
+        user.checkpoints && user.checkpoints.length > 0
+          ? user.checkpoints.findIndex(
+              (check) => check.date === moment().format("DD/MM/YYYY")
+            )
+          : undefined;
+      if (indexCheck === undefined) {
+        user.checkpoints.unshift({
+          date: moment().format("DD/MM/YYYY"),
+          firstCheck: moment().format(),
+        });
+        console.log(user);
+        const result = await userModel.findOneAndUpdate(
+          { _id: user._id },
+          user,
+          { new: true }
+        );
+        return result.toJSON();
+      }
+      if (
+        user.checkpoints[indexCheck] &&
+        user.checkpoints[indexCheck].lastCheck == undefined
+      ) {
+        console.log(user.checkpoints[indexCheck].lastCheck);
+        const a = new moment(user.checkpoints[indexCheck].firstCheck);
+        const b = new moment();
+        user.checkpoints[indexCheck].lastCheck = moment().format();
+        user.checkpoints[indexCheck].workTime = b.diff(a, "seconds");
+        const result = await userModel.findOneAndUpdate(
+          { _id: user._id },
+          user,
+          { new: true }
+        );
+        return result.toJSON();
+      } else {
+        throw new GraphQLError("pointage entrer/sortie fait aujoud'hui !");
+      }
+    },
   },
   Query: {
     async getUserByToken(root, args, context) {
-      const {token} = args
+      const { token } = args;
       if (!token)
         throw new GraphQLError("Token non défini", {
           extensions: {
@@ -118,7 +165,13 @@ const userResolver = {
         });
       const { id } = jwt.verify(token, "mySecret");
       const user = await userModel.findById(id);
-      return {...user.toJSON(), token};
+      return { ...user.toJSON(), token };
+    },
+    async getUserProfil(root, args, context) {
+      const user = await userModel.findById({ _id: args.id });
+      if (!user) throw new GraphQLError("User not found !");
+      console.log(user);
+      return user.toJSON();
     },
   },
 };
