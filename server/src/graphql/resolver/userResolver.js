@@ -38,11 +38,23 @@ const userResolver = {
     },
     async signIn(root, args, context) {
       const { email, password } = args.input;
-      const user = await userModel.findOne({ email: email });
-      if (user && bcrypt.compareSync(password, user.password)) {
-        const token = jwt.sign({ id: user.id }, "mySecret");
-        return { ...user.toJSON(), token };
-      } else {
+      try {
+        const user = await userModel.findOne({ email: email });
+        if (user && bcrypt.compareSync(password, user.password)) {
+          const token = jwt.sign({ id: user.id }, "mySecret");
+          return { ...user.toJSON(), token };
+        } else {
+          throw new GraphQLError(
+            "Les informations d'identification sont invalides.",
+            {
+              extensions: {
+                code: "BAD_CREDENTIALS",
+                http: { status: 401 },
+              },
+            }
+          );
+        }
+      } catch (error) {
         throw new GraphQLError(
           "Les informations d'identification sont invalides.",
           {
@@ -51,7 +63,7 @@ const userResolver = {
               http: { status: 401 },
             },
           }
-        );
+        ).toJSON();
       }
     },
     async updateUser(root, args, context) {
@@ -93,6 +105,20 @@ const userResolver = {
           extensions: { code: "BAD_INPUT", status: 401 },
         });
       }
+    },
+  },
+  Query: {
+    async getUserByToken(root, args, context) {
+      const {token} = args
+      if (!token)
+        throw new GraphQLError("Token non défini", {
+          extensions: {
+            code: 404,
+          },
+        });
+      const { id } = jwt.verify(token, "mySecret");
+      const user = await userModel.findById(id);
+      return {...user.toJSON(), token};
     },
   },
 };

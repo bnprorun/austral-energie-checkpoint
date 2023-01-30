@@ -53,6 +53,7 @@ const userType = `#graphql
     type Query {
         getUsers: [UserResponse],
         getUserProfil(id: ID!) : UserResponse
+        getUserByToken(token: String!) : AuthenticatedUser
     }
 
     type Mutation {
