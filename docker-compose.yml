@@ -1,6 +1,28 @@
 version: '3.1'
 
 services:
+  client: 
+    depends_on : 
+      - mongo
+    build:
+      context: client/
+      target: production
+    ports:
+      - 3001:3000
+  server: 
+    restart: always
+    build:
+      context: server/
+      target: production
+    environment:
+      MONGO_URL: mongodb://root:root@mongo
+    ports:
+      - 3000:3000
+    links: 
+      - mongo
+    networks:
+      - node-webapp-network
+
 
   mongo:
     image: mongo
@@ -13,7 +35,9 @@ services:
       - 27017:27017
     volumes:
       - db_data:/data/db
-
+    networks:
+      - node-webapp-network
+  
   mongo-express:
     image: mongo-express
     restart: always
@@ -30,6 +54,13 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:root@mongo:27017/
     links: 
       - mongo
+    networks:
+      - node-webapp-network
+    
 
+networks:
+  node-webapp-network:
+    driver: bridge
+    
 volumes:
   db_data:

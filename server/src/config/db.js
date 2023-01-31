@@ -8,7 +8,9 @@ dotenv.config();
 const dbUrl = process.env.DATABASE_URL;
 
 const connectDB = () => {
-  return mongoose.connect(dbUrl, { dbName: "aecdb" }, (err) => {
+  console.log(dbUrl);
+  console.log(process.env.MONGO_URL);
+  return mongoose.connect(process.env.MONGO_URL, { dbName: "aecdb" }, (err) => {
     if (err) {
       console.error("Connection to DB failed");
     } else {

@@ -59,7 +59,7 @@ const HomePage = (props) => {
               </a>
             </div>
             <div className="lg:flex lg:flex-1 lg:justify-end">
-              {isAuth && user && user.admin ? (
+              {isAuth && user && user.admin && (
                 <>
                   <NavLink
                     to="/admin"
@@ -68,7 +68,8 @@ const HomePage = (props) => {
                     Tableau de bord <span aria-hidden="true">&rarr;</span>
                   </NavLink>
                 </>
-              ) : (
+              )} 
+              {isAuth && user && !user.admin && (
                 <>
                   <NavLink
                     to="/admin"
