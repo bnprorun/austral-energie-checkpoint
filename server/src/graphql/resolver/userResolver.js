@@ -155,6 +155,17 @@ const userResolver = {
     },
   },
   Query: {
+    async getUsers(root, args, context) {
+      if (!context.user)
+        throw new GraphQLError("Vous n'êtes pas connecter", {
+          extensions: { code: "UNAUTHENTICATED", status: 401 },
+        });
+      if (context.user && context.user.admin == false)
+        throw new GraphQLError("Vous n'êtes pas admin", {
+          extensions: { code: "UNAUTHORIZED", status: 401 },
+        });
+      return userModel.find();
+    },
     async getUserByToken(root, args, context) {
       const { token } = args;
       if (!token)
